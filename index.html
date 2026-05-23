@@ -11,10 +11,52 @@
 <script>
 window.onload = function(){
     setTimeout(function(){
-        if(window.plus){
-            plus.nativeUI.confirm("Test Update Popup","Tip",["OK","Cancel"]);
+        if(!window.plus) return;
+        const localVer = "1.0.8";
+        const verApi = "https://i.shabi.one/version.txt";
+        const downUrl = "https://i.shabi.one/new-UKS.apk";
+        const updateTip = "Fix bugs and optimize performance";
+
+        function verCompare(oldV, newV){
+            let o = oldV.split('.').map(Number);
+            let n = newV.split('.').map(Number);
+            let len = Math.max(o.length,n.length);
+            for(let i=0;i<len;i++){
+                let ov = o[i]||0;
+                let nv = n[i]||0;
+                if(nv>ov) return 1;
+                if(nv<ov) return -1;
+            }
+            return 0;
         }
-    },2000);
+
+        function checkUpdate(){
+            let xhr = new XMLHttpRequest();
+            xhr.open("GET",verApi,true);
+            xhr.timeout = 6000;
+            xhr.onreadystatechange = function(){
+                if(xhr.readyState === 4){
+                    if(xhr.status === 200){
+                        let netVer = xhr.responseText.trim();
+                        if(verCompare(localVer,netVer) === 1){
+                            plus.nativeUI.confirm(
+                                "New Version: "+netVer+"\n"+updateTip,
+                                function(res){
+                                    if(res.index === 0){
+                                        plus.runtime.openURL(downUrl);
+                                    }
+                                },
+                                "Update Notice",
+                                ["Update","Later"]
+                            );
+                        }
+                    }
+                }
+            };
+            xhr.send();
+        }
+        checkUpdate();
+    },1500);
 };
 </script>
 </head>
