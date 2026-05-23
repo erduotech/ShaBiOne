@@ -12,25 +12,45 @@
 	window.onload = function(){
     setTimeout(function(){
         if(!window.plus) return;
-
-        // --------------- 这里我给你写死测试，一定弹窗 ---------------
         const localVer = "1.0.8";
-        const netVer = "1.0.9"; // 强制线上版本比本地高
+        // 换成HTTP协议地址，避开老旧SSL兼容问题
+        const verApi = "http://i.shabi.one/version1.txt";
         const downUrl = "https://xxx.com/new.apk";
         const updateTip = "Fix bugs and optimize performance";
 
-        // 直接弹窗，不走网络请求，测试一定成功
-        plus.nativeUI.confirm(
-            "New Version: "+netVer+"\n"+updateTip,
-            function(res){
-                if(res.index === 0){
-                    plus.runtime.openURL(downUrl);
-                }
-            },
-            "Update Notice",
-            ["Update","Later"]
-        );
+        function verCompare(oldV, newV){
+            let o = oldV.split('.').map(Number);
+            let n = newV.split('.').map(Number);
+            let len = Math.max(o.length,n.length);
+            for(let i=0;i<len;i++){
+                let ov = o[i]||0;
+                let nv = n[i]||0;
+                if(nv>ov) return 1;
+                if(nv<ov) return -1;
+            }
+            return 0;
+        }
 
+        let xhr = new XMLHttpRequest();
+        xhr.open("GET",verApi,true);
+        xhr.timeout = 6000;
+        xhr.onload = function(){
+            let netVer = xhr.responseText.trim();
+            if(verCompare(localVer, netVer) === 1){
+                plus.nativeUI.confirm(
+                    "New Version: "+netVer+"\n"+updateTip,
+                    res=>{
+                        if(res.index === 0){
+                            plus.runtime.openURL(downUrl);
+                        }
+                    },
+                    "Update Notice",
+                    ["Update","Later"]
+                );
+            }
+        };
+        xhr.onerror = function(){};
+        xhr.send();
     },1500);
 };
 </script>
