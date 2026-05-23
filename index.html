@@ -13,8 +13,8 @@
     setTimeout(function(){
         if(!window.plus) return;
         const localVer = "1.0.8";
-        const verApi = "https://i.shabi.one/version1.txt";
-        const downUrl = "https://i.shabi.one/new-UKS.apk";
+        const verApi = "https://xxx.com/version.txt";
+        const downUrl = "https://xxx.com/new.apk";
         const updateTip = "Fix bugs and optimize performance";
 
         function verCompare(oldV, newV){
@@ -31,11 +31,14 @@
         }
 
         function checkUpdate(){
-            fetch(verApi)
-            .then(res=>res.text())
-            .then(text=>{
-                let netVer = text.trim();
-                if(verCompare(localVer, netVer) === 1){
+            let xhr = new XMLHttpRequest();
+            xhr.open("GET",verApi,true);
+            xhr.onload = function(){
+                let netVer = xhr.responseText.trim();
+                // 临时弹窗打印两个版本
+                plus.nativeUI.alert(`本地:${localVer}\n线上:${netVer}`);
+                let res = verCompare(localVer, netVer);
+                if(res === 1){
                     plus.nativeUI.confirm(
                         "New Version: "+netVer+"\n"+updateTip,
                         res=>{
@@ -47,10 +50,11 @@
                         ["Update","Later"]
                     );
                 }
-            })
-            .catch(()=>{
-                // 网络异常静默忽略
-            });
+            };
+            xhr.onerror = function(){
+                plus.nativeUI.alert("Network request failed");
+            };
+            xhr.send();
         }
         checkUpdate();
     },1500);
