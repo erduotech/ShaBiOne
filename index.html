@@ -13,7 +13,6 @@
     setTimeout(function(){
         if(!window.plus) return;
         const localVer = "1.0.8";
-        // 改成和网页同源相对路径
         const verApi = "/version.txt";
         const downUrl = "/new.apk";
         const updateTip = "Fix bugs and optimize performance";
@@ -31,22 +30,49 @@
             return 0;
         }
 
+        // 自定义美化弹窗
+        function showBeautyPopup(version,content){
+            let mask = document.createElement('div');
+            let box = document.createElement('div');
+            let title = document.createElement('h3');
+            let desc = document.createElement('p');
+            let btnWrap = document.createElement('div');
+            let btnUpdate = document.createElement('button');
+            let btnCancel = document.createElement('button');
+
+            // 样式
+            mask.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center';
+            box.style.cssText = 'width:80%;max-width:320px;background:#fff;border-radius:12px;overflow:hidden;text-align:center';
+            title.style.cssText = 'margin:20px 0 10px;font-size:18px;color:#333';
+            desc.style.cssText = 'padding:0 20px 20px;color:#666;font-size:14px;line-height:1.6';
+            btnWrap.style.cssText = 'display:flex;border-top:1px solid #eee';
+            btnUpdate.style.cssText = 'flex:1;padding:14px;border:none;font-size:15px;color:#fff;background:#1677ff';
+            btnCancel.style.cssText = 'flex:1;padding:14px;border:none;font-size:15px;color:#666;background:#fff';
+
+            title.innerText = 'New Version Available';
+            desc.innerText = `Version ${version}\n${content}`;
+            btnUpdate.innerText = 'Update Now';
+            btnCancel.innerText = 'Later';
+
+            btnCancel.onclick = ()=>mask.remove();
+            btnUpdate.onclick = ()=>{
+                mask.remove();
+                plus.runtime.openURL(location.origin + downUrl);
+            };
+
+            btnWrap.append(btnUpdate,btnCancel);
+            box.append(title,desc,btnWrap);
+            mask.appendChild(box);
+            document.body.appendChild(mask);
+        }
+
         let xhr = new XMLHttpRequest();
         xhr.open("GET",verApi,true);
         xhr.timeout = 6000;
         xhr.onload = function(){
             let netVer = xhr.responseText.trim();
             if(verCompare(localVer, netVer) === 1){
-                plus.nativeUI.confirm(
-                    "New Version: "+netVer+"\n"+updateTip,
-                    res=>{
-                        if(res.index === 0){
-                            plus.runtime.openURL(location.origin + downUrl);
-                        }
-                    },
-                    "Update Notice",
-                    ["Update","Later"]
-                );
+                showBeautyPopup(netVer,updateTip);
             }
         };
         xhr.send();
