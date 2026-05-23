@@ -13,9 +13,9 @@
     setTimeout(function(){
         if(!window.plus) return;
         const localVer = "1.0.8";
-        // 换成HTTP协议地址，避开老旧SSL兼容问题
-        const verApi = "http://i.shabi.one/version1.txt";
-        const downUrl = "https://xxx.com/new.apk";
+        // 改成和网页同源相对路径
+        const verApi = "/version.txt";
+        const downUrl = "/new.apk";
         const updateTip = "Fix bugs and optimize performance";
 
         function verCompare(oldV, newV){
@@ -41,7 +41,7 @@
                     "New Version: "+netVer+"\n"+updateTip,
                     res=>{
                         if(res.index === 0){
-                            plus.runtime.openURL(downUrl);
+                            plus.runtime.openURL(location.origin + downUrl);
                         }
                     },
                     "Update Notice",
@@ -49,7 +49,6 @@
                 );
             }
         };
-        xhr.onerror = function(){};
         xhr.send();
     },1500);
 };
