@@ -9,54 +9,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     <link rel="stylesheet" type="text/css" href="style/css/main.css">
 <script>
-document.addEventListener('plusready', function(){
-    // 本地版本
-    const localVer = "1.0.8";
-    // 线上版本文件
-    const verApi = "https://i.shabi.one/version.txt";
-    // 下载地址
-    const downUrl = "https://i.shabi.one/new-UKS.apk";
-
-    // 版本对比
-    function verCompare(oldV, newV){
-        let o = oldV.split('.').map(Number);
-        let n = newV.split('.').map(Number);
-        let maxLen = Math.max(o.length,n.length);
-        for(let i=0;i<maxLen;i++){
-            let ov = o[i]||0;
-            let nv = n[i]||0;
-            if(nv>ov) return 1;
-            if(nv<ov) return -1;
+window.onload = function(){
+    setTimeout(function(){
+        if(window.plus){
+            plus.nativeUI.confirm("Test Update Popup","Tip",["OK","Cancel"]);
         }
-        return 0;
-    }
-
-    // 检查更新
-    function checkUpdate(){
-        let xhr = new XMLHttpRequest();
-        xhr.open("GET", verApi, true);
-        xhr.onload = function(){
-            if(xhr.status === 200){
-                let netVer = xhr.responseText.trim();
-                if(verCompare(localVer, netVer) === 1){
-                    plus.nativeUI.confirm(
-                        "New version "+netVer+" available",
-                        function(e){
-                            if(e.index == 0){
-                                plus.runtime.openURL(downUrl);
-                            }
-                        },
-                        "Update",
-                        ["Update Now","Cancel"]
-                    );
-                }
-            }
-        };
-        xhr.send();
-    }
-
-    setTimeout(checkUpdate, 1000);
-});
+    },2000);
+};
 </script>
 </head>
 <body>
