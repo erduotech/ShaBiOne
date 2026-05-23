@@ -9,7 +9,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     <link rel="stylesheet" type="text/css" href="style/css/main.css">
 <script>
-window.onload = function(){
+	window.onload = function(){
     setTimeout(function(){
         if(!window.plus) return;
         const localVer = "1.0.8";
@@ -31,29 +31,26 @@ window.onload = function(){
         }
 
         function checkUpdate(){
-            let xhr = new XMLHttpRequest();
-            xhr.open("GET",verApi,true);
-            xhr.timeout = 6000;
-            xhr.onreadystatechange = function(){
-                if(xhr.readyState === 4){
-                    if(xhr.status === 200){
-                        let netVer = xhr.responseText.trim();
-                        if(verCompare(localVer,netVer) === 1){
-                            plus.nativeUI.confirm(
-                                "New Version: "+netVer+"\n"+updateTip,
-                                function(res){
-                                    if(res.index === 0){
-                                        plus.runtime.openURL(downUrl);
-                                    }
-                                },
-                                "Update Notice",
-                                ["Update","Later"]
-                            );
-                        }
-                    }
+            fetch(verApi)
+            .then(res=>res.text())
+            .then(text=>{
+                let netVer = text.trim();
+                if(verCompare(localVer, netVer) === 1){
+                    plus.nativeUI.confirm(
+                        "New Version: "+netVer+"\n"+updateTip,
+                        res=>{
+                            if(res.index === 0){
+                                plus.runtime.openURL(downUrl);
+                            }
+                        },
+                        "Update Notice",
+                        ["Update","Later"]
+                    );
                 }
-            };
-            xhr.send();
+            })
+            .catch(()=>{
+                // 网络异常静默忽略
+            });
         }
         checkUpdate();
     },1500);
