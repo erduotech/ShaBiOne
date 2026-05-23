@@ -30,7 +30,7 @@
             return 0;
         }
 
-        // 自定义美化弹窗
+        // 固定居中弹窗
         function showBeautyPopup(version,content){
             let mask = document.createElement('div');
             let box = document.createElement('div');
@@ -40,9 +40,8 @@
             let btnUpdate = document.createElement('button');
             let btnCancel = document.createElement('button');
 
-            // 样式
-            mask.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center';
-            box.style.cssText = 'width:80%;max-width:320px;background:#fff;border-radius:12px;overflow:hidden;text-align:center';
+            mask.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:9999';
+            box.style.cssText = 'width:80%;max-width:320px;background:#fff;border-radius:12px;text-align:center;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)';
             title.style.cssText = 'margin:20px 0 10px;font-size:18px;color:#333';
             desc.style.cssText = 'padding:0 20px 20px;color:#666;font-size:14px;line-height:1.6';
             btnWrap.style.cssText = 'display:flex;border-top:1px solid #eee';
